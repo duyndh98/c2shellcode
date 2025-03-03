@@ -3,10 +3,9 @@
 
 #include "Header.h"
 
-int main()
+#pragma code_seg(push, ".textex$0111")
+void Entry()
 {
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
-
 	CHAR strUser32[] = { 'u','s','e','r','3','2','.','d','l','l',0 };
 	CHAR strMboxTitle[] = { 'S','h','e','l','l','S','t','d','i','o', 0 };
 	CHAR strMboxMsg[] = { 'H','e','l','l','o',' ', 'W','o','r','l','d','!',0 };
@@ -17,6 +16,32 @@ int main()
 	DEFINE_FUNC_PTR("user32.dll", MessageBoxA);
 	MessageBoxA(NULL, strMboxMsg, strMboxTitle, MB_OK);
 
+	return;
+}
+#pragma code_seg(pop)
+
+void WriteShellcode(LPVOID shellcode, DWORD size, LPVOID entry)
+{
+	auto buf = (LPBYTE)VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	memcpy(buf, shellcode, size);
+
+	auto fn = (void (*)())(buf + (DWORD_PTR)entry - (DWORD_PTR)shellcode);
+	fn();
+	
+	return;
+}
+
+int main()
+{
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+
+	auto size = (DWORD_PTR)c2shellcode::EndShellcode - (DWORD_PTR)c2shellcode::BeginShellcode;
+	auto shellcode = c2shellcode::BeginShellcode;
+
+	WriteShellcode(shellcode, size, Entry);
+	//Test();
+
+	
 	return 0;
 }
 

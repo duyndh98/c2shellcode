@@ -41,4 +41,8 @@ namespace c2shellcode {
 	LDR_DATA_TABLE_ENTRY* getDataTableEntry(const LIST_ENTRY* ptr);
 
 	PVOID getProcAddrByHash(DWORD hash);
+
+	void BeginShellcode();
+	void EndShellcode();
+
 }
