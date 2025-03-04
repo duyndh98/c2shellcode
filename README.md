@@ -17,8 +17,8 @@ unsigned char w_str[] = { 'E', 0, 'x', 0, 'a', 0, 'm', 0, 'p', 0, 'l', 0, 'e', 0
 
 ## New features
 
-- [x] You can add functions from any source file; they are no longer restricted to the MalCodeBegin and MalCodeEnd markers.
-- [x] You can define an Entrypoint function without explicitly calling it; it will be preserved even in release builds with the suggested optimization switches.
+- [x] Add functions from any source file; they are no longer restricted to the MalCodeBegin and MalCodeEnd markers.
+- [x] Define an Entrypoint function without explicitly calling it.
 
 ## Demo
 
